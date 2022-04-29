@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_bloc/blocs/todos/todos_bloc.dart';
 import 'package:todo_bloc/components.dart';
+import 'package:todo_bloc/simple_bloc_observer.dart';
 
 import 'blocs/todos_filter/todos_filter_bloc.dart';
 import 'models/todos_model.dart';
 import 'screens/main_screen/main_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  BlocOverrides.runZoned(
+    () {
+      runApp(const MyApp());
+    },
+    blocObserver: SimpleBlocObserver(),
+  );
 }
 
 class MyApp extends StatelessWidget {
