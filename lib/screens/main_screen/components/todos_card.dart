@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_bloc/blocs/todos/todos_bloc.dart';
+import 'package:todo_bloc/blocs/todos_filter/todos_filter_bloc.dart';
 
 import '../../../components.dart';
-import '../../../blocs/todos/todos_bloc.dart';
 
 class TodosCard extends StatelessWidget {
   const TodosCard({
@@ -14,15 +15,25 @@ class TodosCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TodosBloc, TodosState>(
+    return BlocConsumer<TodosFilterBloc, TodosFilterState>(
+      listener: (context, state) {
+        if (state is TodosFilterLoaded) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'There are ${state.filteredTodos.length} To Do\'s in your ${state.todosFilter.name.toString().split('.').last} list.'),
+            ),
+          );
+        }
+      },
       builder: (context, state) {
-        if (state is TodosLoading) {
+        if (state is TodosFilterLoading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
 
-        if (state is TodosLoaded) {
+        if (state is TodosFilterLoaded) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -37,7 +48,7 @@ class TodosCard extends StatelessWidget {
                 ),
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: state.todos.length,
+                  itemCount: state.filteredTodos.length,
                   itemBuilder: (context, index) {
                     return Card(
                       margin: const EdgeInsets.only(bottom: 8),
@@ -49,19 +60,30 @@ class TodosCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${state.todos[index].id}: ${state.todos[index].task}',
+                              '${state.filteredTodos[index].id}: ${state.filteredTodos[index].task}',
                               style: kTextStyle,
                             ),
                             Row(
                               children: [
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.read<TodosBloc>().add(
+                                          UpdateTodo(
+                                            todo: state.filteredTodos[index]
+                                                .copyWith(isCompleted: true),
+                                          ),
+                                          // UpdateTodos(todosFilter: state.filteredTodos[index]);
+                                        );
+                                  },
                                   icon: const Icon(Icons.add_task),
                                 ),
                                 IconButton(
                                   onPressed: () {
                                     context.read<TodosBloc>().add(
-                                          DeleteTodo(todo: state.todos[index]),
+                                          DeleteTodo(
+                                            todo: state.filteredTodos[index]
+                                                .copyWith(isCancelled: true),
+                                          ),
                                         );
                                   },
                                   icon: const Icon(Icons.cancel),

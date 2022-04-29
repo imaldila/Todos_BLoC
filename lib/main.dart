@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
+        BlocProvider<TodosBloc>(
           create: (context) => TodosBloc()
             ..add(
               LoadTodos(
@@ -35,9 +35,9 @@ class MyApp extends StatelessWidget {
               ),
             ),
         ),
-        BlocProvider(
+        BlocProvider<TodosFilterBloc>(
           create: (context) => TodosFilterBloc(
-            todosBloc: TodosBloc(),
+            todosBloc: BlocProvider.of<TodosBloc>(context),
           ),
         )
       ],

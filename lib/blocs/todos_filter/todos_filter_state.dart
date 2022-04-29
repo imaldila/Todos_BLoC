@@ -19,5 +19,8 @@ class TodosFilterLoaded extends TodosFilterState {
   });
 
   @override
-  List<Object> get props => [filteredTodos, todosFilter];
+  List<Object> get props => [
+        filteredTodos,
+        todosFilter,
+      ];
 }

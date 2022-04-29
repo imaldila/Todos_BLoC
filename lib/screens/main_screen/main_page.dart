@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_bloc/blocs/todos_filter/todos_filter_bloc.dart';
-import 'package:todo_bloc/models/todos_filter_model.dart';
 
-import '../add_todos_screen/add_todos_screen.dart';
-
-import 'components/todos_card.dart';
+import '../../models/models.dart';
+import '../screens.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -18,8 +16,10 @@ class MainPage extends StatelessWidget {
         appBar: _buildAppBar(context),
         body: const TabBarView(
           children: [
-             TodosCard(title: 'Pending To Do\'s :',),
-             TodosCard(title: 'Completed To Do\'s :'),
+            TodosCard(
+              title: 'Pending To Do\'s :',
+            ),
+            TodosCard(title: 'Completed To Do\'s :'),
           ],
         ),
       ),

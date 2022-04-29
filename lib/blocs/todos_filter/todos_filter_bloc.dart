@@ -17,9 +17,10 @@ class TodosFilterBloc extends Bloc<TodosFilterEvent, TodosFilterState> {
       : _todosBloc = todosBloc,
         super(TodosFilterLoading()) {
     on<UpdateTodos>(_onUpdateTodos);
+    on<UpdateFilter>(_onUpdateFilter);
     _todosSubscription = todosBloc.stream.listen((state) {
       add(
-        const UpdateTodos(),
+        const UpdateFilter(),
       );
     });
   }
@@ -37,10 +38,26 @@ class TodosFilterBloc extends Bloc<TodosFilterEvent, TodosFilterState> {
           case TodosFilter.cancelled:
             return todo.isCancelled!;
           case TodosFilter.pending:
-            return (todo.isCancelled! || todo.isCompleted!);
+            return !(todo.isCancelled! || todo.isCompleted!);
         }
       }).toList();
-      emit(TodosFilterLoaded(filteredTodos: todos));
+      emit(TodosFilterLoaded(
+          filteredTodos: todos, todosFilter: event.todosFilter));
+    }
+  }
+
+  void _onUpdateFilter(UpdateFilter event, Emitter<TodosFilterState> emit) {
+    if (state is TodosFilterLoading) {
+      add(
+        const UpdateTodos(todosFilter: TodosFilter.pending),
+      );
+    }
+
+    if (state is TodosFilterLoaded) {
+      final state = this.state as TodosFilterLoaded;
+      add(
+        UpdateTodos(todosFilter: state.todosFilter),
+      );
     }
   }
 }
